@@ -1,9 +1,11 @@
+D:\Praktikum_PBO\SistemListTugasKuliah\src\main\java\config\Database.java
 D:\Praktikum_PBO\SistemListTugasKuliah\src\main\java\controller\TugasController.java
-D:\Praktikum_PBO\SistemListTugasKuliah\src\main\java\Main\Main.java
+D:\Praktikum_PBO\SistemListTugasKuliah\src\main\java\dao\TugasDAO.java
+D:\Praktikum_PBO\SistemListTugasKuliah\src\main\java\dao\TugasDAOImpl.java
+D:\Praktikum_PBO\SistemListTugasKuliah\src\main\java\Main\main.java
 D:\Praktikum_PBO\SistemListTugasKuliah\src\main\java\model\EntitasTugas.java
 D:\Praktikum_PBO\SistemListTugasKuliah\src\main\java\model\Mahasiswa.java
 D:\Praktikum_PBO\SistemListTugasKuliah\src\main\java\model\PenyimpananData.java
-D:\Praktikum_PBO\SistemListTugasKuliah\src\main\java\model\Tugas.java
 D:\Praktikum_PBO\SistemListTugasKuliah\src\main\java\model\TugasIndividu.java
 D:\Praktikum_PBO\SistemListTugasKuliah\src\main\java\model\TugasKelompok.java
 D:\Praktikum_PBO\SistemListTugasKuliah\src\main\java\view\MainView.java

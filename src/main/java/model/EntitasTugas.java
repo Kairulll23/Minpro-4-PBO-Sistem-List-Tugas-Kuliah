@@ -5,14 +5,14 @@ public abstract class EntitasTugas implements PenyimpananData {
     private String namaMatkul;
     private String detailTugas;
     private String dateline;
-    private boolean isSelesai; // Fitur Menarik: Tracking Status
+    private boolean isSelesai;
 
     public EntitasTugas(String kodeTugas, String namaMatkul, String detailTugas, String dateline) {
         this.kodeTugas = kodeTugas;
         this.namaMatkul = namaMatkul;
         this.detailTugas = detailTugas;
         this.dateline = dateline;
-        this.isSelesai = false; // Default: Belum Selesai
+        this.isSelesai = false;
     }
 
     public String getKodeTugas() { return kodeTugas; }
@@ -32,7 +32,6 @@ public abstract class EntitasTugas implements PenyimpananData {
         return isSelesai ? "SELESAI [v]" : "BELUM [x]";
     }
 
-    // Abstract Method (Abstraction)
     public abstract String getTipeTugas();
 
     @Override

@@ -3,7 +3,7 @@ package view;
 import controller.TugasController;
 import model.*;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class MainView {
@@ -19,7 +19,7 @@ public class MainView {
         while (lanjut) {
             tampilkanDashboardStatistik();
 
-            System.out.println("\n=== SISTEM MANAJEMEN TUGAS KULIAH ===");
+            System.out.println("\n=== SISTEM MANAJEMEN TUGAS KULIAH (DATABASE) ===");
             System.out.println("1. Tambah Tugas Baru (Create)");
             System.out.println("2. Tampilkan Daftar Tugas (Read)");
             System.out.println("3. Cari Tugas berdasarkan Mata Kuliah");
@@ -48,7 +48,8 @@ public class MainView {
     }
 
     private void tampilkanDashboardStatistik() {
-        int total = controller.getAllTugas().size();
+        List<EntitasTugas> all = controller.getAllTugas();
+        int total = all.size();
         int selesai = controller.getJumlahSelesai();
         int belum = total - selesai;
 
@@ -76,7 +77,7 @@ public class MainView {
             if (input.isEmpty()) {
                 System.out.println("[!] Inputan tidak boleh kosong.");
             } else if (input.matches("^\\d+$")) {
-                System.out.println("[!] Inputan tidak boleh hanya berupa angka! Harap masukkan teks valid.");
+                System.out.println("[!] Inputan tidak boleh hanya berupa angka!");
                 input = "";
             }
         } while (input.isEmpty());
@@ -110,25 +111,30 @@ public class MainView {
         String detail = bacaTeksBebas("Catatan/Detail Tugas: ");
         String dateline = bacaTeksBebas("Deadline (contoh: 2026-11-01 23:59): ");
 
+        boolean sukses = false;
         if (jenis == 1) {
-            String platform = bacaTeks("Platform Pengumpulan (Spada/Email/dll): ");
-            controller.tambahTugas(new TugasIndividu(autoKode, matkul, detail, dateline, platform));
+            String platform = bacaTeks("Platform Pengumpulan: ");
+            sukses = controller.tambahTugas(new TugasIndividu(autoKode, matkul, detail, dateline, platform));
         } else if (jenis == 2) {
             System.out.print("Jumlah Anggota Kelompok: ");
             int jml = bacaAngka();
-            controller.tambahTugas(new TugasKelompok(autoKode, matkul, detail, dateline, jml));
+            sukses = controller.tambahTugas(new TugasKelompok(autoKode, matkul, detail, dateline, jml));
         } else {
-            System.out.println("[!] Jenis tugas tidak valid. Batal menambahkan tugas.");
+            System.out.println("[!] Jenis tugas tidak valid.");
             return;
         }
 
-        System.out.println("[+] Tugas berhasil ditambahkan dengan Kode: " + autoKode);
+        if (sukses) {
+            System.out.println("[+] Tugas berhasil disimpan ke Database!");
+        } else {
+            System.out.println("[!] Gagal menyimpan tugas ke database.");
+        }
     }
 
     public void tampilkanTugas() {
-        ArrayList<EntitasTugas> list = controller.getAllTugas();
+        List<EntitasTugas> list = controller.getAllTugas();
         if (list.isEmpty()) {
-            System.out.println("\n[!] Belum ada data tugas yang tersimpan.");
+            System.out.println("\n[!] Belum ada data tugas di dalam Database.");
             return;
         }
 
@@ -157,19 +163,18 @@ public class MainView {
         System.out.print("Ubah ke Selesai? (y/n): ");
         String pil = scan.nextLine().trim();
 
-        if (pil.equalsIgnoreCase("y")) {
-            t.setSelesai(true);
-            System.out.println("[+] Status berhasil diperbarui menjadi SELESAI.");
+        boolean statusBaru = pil.equalsIgnoreCase("y");
+        if (controller.ubahStatus(kode, statusBaru)) {
+            System.out.println("[+] Status di database berhasil diperbarui!");
         } else {
-            t.setSelesai(false);
-            System.out.println("[+] Status berhasil diperbarui menjadi BELUM SELESAI.");
+            System.out.println("[!] Gagal memperbarui status.");
         }
     }
 
     private void cariTugasByMatkul() {
         System.out.println("\n--- CARI TUGAS BERDASARKAN MATKUL ---");
         String matkul = bacaTeks("Masukkan Nama Mata Kuliah: ");
-        ArrayList<EntitasTugas> hasil = controller.cariTugas(matkul, true);
+        List<EntitasTugas> hasil = controller.cariTugas(matkul, true);
 
         if (hasil.isEmpty()) {
             System.out.println("[!] Tidak ditemukan tugas untuk mata kuliah: " + matkul);
@@ -186,7 +191,6 @@ public class MainView {
     private void editTugas() {
         System.out.println("\n--- UBAH DATA TUGAS ---");
         tampilkanTugas();
-
         if (controller.getAllTugas().isEmpty()) return;
 
         System.out.print("\nMasukkan Kode Tugas yang ingin diubah: ");
@@ -210,22 +214,25 @@ public class MainView {
             tk.setJumlahAnggota(bacaAngka());
         }
 
-        System.out.println("[+] Data tugas berhasil diperbarui!");
+        if (controller.ubahTugas(t)) {
+            System.out.println("[+] Data tugas berhasil diperbarui di Database!");
+        } else {
+            System.out.println("[!] Gagal memperbarui data.");
+        }
     }
 
     private void hapusTugas() {
         System.out.println("\n--- HAPUS TUGAS ---");
         tampilkanTugas();
-
         if (controller.getAllTugas().isEmpty()) return;
 
         System.out.print("\nMasukkan Kode Tugas yang ingin dihapus: ");
         String kode = scan.nextLine().trim();
 
         if (controller.hapusTugas(kode)) {
-            System.out.println("[+] Tugas " + kode + " berhasil dihapus.");
+            System.out.println("[+] Tugas " + kode + " berhasil dihapus dari Database.");
         } else {
-            System.out.println("[!] Kode tugas tidak ditemukan.");
+            System.out.println("[!] Gagal menghapus atau Kode tidak ditemukan.");
         }
     }
 

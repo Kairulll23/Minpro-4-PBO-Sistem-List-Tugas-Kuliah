@@ -1,72 +1,55 @@
 package controller;
 
+import dao.TugasDAO;
+import dao.TugasDAOImpl;
 import model.EntitasTugas;
-import model.TugasIndividu;
-import model.TugasKelompok;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class TugasController {
-    private final ArrayList<EntitasTugas> listTugasKu = new ArrayList<>();
-    private static int counterID = 1;
+    private final TugasDAO tugasDAO = new TugasDAOImpl();
     private static final String PREFIX = "TGS-";
 
-    public TugasController() {
-        // Dummy Data Awal
-        TugasIndividu t1 = new TugasIndividu(generateAutoKode(), "PBO", "Laporan Mini Project 3", "2026-10-15 23:59", "Spada");
-        TugasKelompok t2 = new TugasKelompok(generateAutoKode(), "Basis Data", "Desain ERD & Normalisasi", "2026-10-20 20:00", 4);
-        
-        t2.setSelesai(true); // Contoh 1 tugas sudah selesai
-        listTugasKu.add(t1);
-        listTugasKu.add(t2);
-    }
-
     public String generateAutoKode() {
-        return String.format("%s%03d", PREFIX, counterID++);
+        String lastKode = tugasDAO.getLastKode();
+        if (lastKode == null || !lastKode.startsWith(PREFIX)) {
+            return "TGS-001";
+        }
+        int lastNum = Integer.parseInt(lastKode.replace(PREFIX, ""));
+        return String.format("%s%03d", PREFIX, lastNum + 1);
     }
 
-    public void tambahTugas(EntitasTugas t) {
-        listTugasKu.add(t);
+    public boolean tambahTugas(EntitasTugas t) {
+        return tugasDAO.insert(t);
     }
 
-    public ArrayList<EntitasTugas> getAllTugas() {
-        return listTugasKu;
+    public List<EntitasTugas> getAllTugas() {
+        return tugasDAO.getAll();
     }
 
-    // Overloading 1: Cari berdasarkan kode
     public EntitasTugas cariTugas(String kodeTugas) {
-        for (EntitasTugas t : listTugasKu) {
-            if (t.getKodeTugas().equalsIgnoreCase(kodeTugas)) {
-                return t;
-            }
-        }
-        return null;
+        return tugasDAO.getByKode(kodeTugas);
     }
 
-    // Overloading 2: Cari berdasarkan nama matkul
-    public ArrayList<EntitasTugas> cariTugas(String namaMatkul, boolean isMatkul) {
-        ArrayList<EntitasTugas> hasil = new ArrayList<>();
-        for (EntitasTugas t : listTugasKu) {
-            if (t.getNamaMatkul().equalsIgnoreCase(namaMatkul)) {
-                hasil.add(t);
-            }
-        }
-        return hasil;
+    public List<EntitasTugas> cariTugas(String namaMatkul, boolean isMatkul) {
+        return tugasDAO.getByMatkul(namaMatkul);
+    }
+
+    public boolean ubahTugas(EntitasTugas t) {
+        return tugasDAO.update(t);
+    }
+
+    public boolean ubahStatus(String kodeTugas, boolean isSelesai) {
+        return tugasDAO.updateStatus(kodeTugas, isSelesai);
     }
 
     public boolean hapusTugas(String kodeTugas) {
-        EntitasTugas t = cariTugas(kodeTugas);
-        if (t != null) {
-            listTugasKu.remove(t);
-            return true;
-        }
-        return false;
+        return tugasDAO.delete(kodeTugas);
     }
 
-    // Hitung statistik untuk Dashboard Stakeholder
     public int getJumlahSelesai() {
         int count = 0;
-        for (EntitasTugas t : listTugasKu) {
+        for (EntitasTugas t : getAllTugas()) {
             if (t.isSelesai()) count++;
         }
         return count;

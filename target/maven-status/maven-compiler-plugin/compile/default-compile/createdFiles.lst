@@ -1,9 +1,11 @@
-model\Tugas.class
 model\TugasIndividu.class
+dao\TugasDAOImpl.class
 model\Mahasiswa.class
 model\PenyimpananData.class
 view\MainView.class
+dao\TugasDAO.class
 model\TugasKelompok.class
-Main\Main.class
+Main\main.class
+config\Database.class
 controller\TugasController.class
 model\EntitasTugas.class
